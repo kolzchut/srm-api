@@ -10,7 +10,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SRM_DEVOPS_DEPLOY_KEY: ${{ secrets.SRM_DEVOPS_DEPLOY_KEY }}
         IMAGE_NAME: srm-api
-        CHART_NAME: api
+        CHART_NAME: etl
+        CHART_SUBPART: api
       run: |
         if [[ "${GITHUB_REF}" =~ ^refs/tags/.* ]]; then
           TAG_NAME="${GITHUB_REF/refs\/tags\//}"
@@ -41,9 +42,9 @@ jobs:
             docker push "ghcr.io/whiletrue-industries/${IMAGE_NAME}:${TAG_NAME}-${GITHUB_SHA}" &&\
             IMAGE="ghcr.io/whiletrue-industries/${IMAGE_NAME}:${TAG_NAME}-${GITHUB_SHA}"
           fi &&\
-          bin/update_yaml.py '{"'"${CHART_NAME}"'":{"image":"'"${IMAGE}"'"}}' "${VALUES_AUTO_UPDATED_FILE}" &&\
+          bin/update_yaml.py '{"'"${CHART_SUBPART}"'":{"image":"'"${IMAGE}"'"}}' "${VALUES_AUTO_UPDATED_FILE}" &&\
           git add "${VALUES_AUTO_UPDATED_FILE}" &&\
-          git commit -m "update image: ${VALUES_AUTO_UPDATED_FILE}" &&\
+          git commit -m "update ${CHART_SUBPART} image: ${VALUES_AUTO_UPDATED_FILE}" &&\
           git push origin main
         fi &&\
         if [ "${GITHUB_REF}" == "refs/heads/main" ]; then
