@@ -28,3 +28,4 @@ All configuration is done via environment variables:
 - `ES_DATAPACKAGE` - A URL pointing to a datapacakge describing the index and containing search hints
 - `ES_HOST` - Host for the ES instance
 - `ES_PORT` - Port of the ES instance
+- `ES_HTTP_AUTH` - Optional http auth for the ES instance in the following format: `username:password`

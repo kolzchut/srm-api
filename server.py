@@ -27,7 +27,10 @@ blueprint = apies_blueprint(app,
     [
         os.environ['ES_DATAPACKAGE']
     ],
-    elasticsearch.Elasticsearch([dict(host=os.environ['ES_HOST'], port=int(os.environ['ES_PORT']))], timeout=60),
+    elasticsearch.Elasticsearch(
+        [dict(host=os.environ['ES_HOST'], port=int(os.environ['ES_PORT']))], timeout=60,
+        **({"http_auth": os.environ['ES_HTTP_AUTH'].split(':')} if os.environ.get('ES_HTTP_AUTH') else {})
+    ),
     dict(
         point=index_name
     ),
