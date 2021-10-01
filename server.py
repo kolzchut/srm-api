@@ -23,6 +23,7 @@ app.register_blueprint(
 
 # ES API
 index_name = os.environ['ES_INDEX_NAME']
+TYPES = ['cards']
 blueprint = apies_blueprint(app,
     [
         os.environ['ES_DATAPACKAGE']
@@ -32,7 +33,8 @@ blueprint = apies_blueprint(app,
         **({"http_auth": os.environ['ES_HTTP_AUTH'].split(':')} if os.environ.get('ES_HTTP_AUTH') else {})
     ),
     dict(
-        point=index_name
+        (t, f'{index_name}__{t}')
+        for t in TYPES
     ),
     f'{index_name}__docs',
 )
