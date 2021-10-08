@@ -37,6 +37,7 @@ blueprint = apies_blueprint(app,
         for t in TYPES
     ),
     f'{index_name}__docs',
+    debug_queries=True
 )
 app.register_blueprint(blueprint, url_prefix='/api/idx/')
 
