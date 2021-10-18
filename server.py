@@ -23,11 +23,10 @@ app.register_blueprint(
 
 # ES API
 index_name = os.environ['ES_INDEX_NAME']
-TYPES = ['cards']
+TYPES = ['cards', 'places']
+datapackages = [x.strip() for x in os.environ['ES_DATAPACKAGE'].split('\n') if x.strip()]
 blueprint = apies_blueprint(app,
-    [
-        os.environ['ES_DATAPACKAGE']
-    ],
+    datapackages,
     elasticsearch.Elasticsearch(
         [dict(host=os.environ['ES_HOST'], port=int(os.environ['ES_PORT']))], timeout=60,
         **({"http_auth": os.environ['ES_HTTP_AUTH'].split(':')} if os.environ.get('ES_HTTP_AUTH') else {})
