@@ -23,8 +23,8 @@ def text_field_rules(field):
             return [('inexact', '^10')]
     elif field.get('es:keyword'):
         return [('exact', '')]
-    elif field.get('es:autocomplete'):
-        return [('inexact', ''), ('inexact', '_2gram'), ('inexact', '_3gram')]
+    # elif field.get('es:autocomplete'):
+    #     return [('inexact', ''), ('inexact', '_2gram'), ('inexact', '_3gram')]
     else:
         return [('inexact', '')]
 
