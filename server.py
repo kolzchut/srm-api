@@ -15,7 +15,7 @@ def text_field_rules(field):
         if field.get('es:keyword'):
             return [('exact', '^10')]
         else:
-            return [('inexact', '^3'), ('natural', '.hebrew^10')]
+            return [('inexact', '^3')]
     elif field.get('es:boost'):
         if field.get('es:keyword'):
             return [('exact', '^10')]
@@ -57,7 +57,8 @@ blueprint = apies_blueprint(app,
     ),
     f'{index_name}__docs',
     debug_queries=True,
-    text_field_rules=text_field_rules
+    text_field_rules=text_field_rules,
+    multi_match_type='bool_prefix'
 )
 app.register_blueprint(blueprint, url_prefix='/api/idx/')
 
