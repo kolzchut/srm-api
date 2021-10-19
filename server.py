@@ -9,6 +9,26 @@ import elasticsearch
 from apisql import apisql_blueprint
 from apies import apies_blueprint
 
+
+def text_field_rules(field):
+    if field.get('es:title'):
+        if field.get('es:keyword'):
+            return [('exact', '^10')]
+        else:
+            return [('inexact', '^3'), ('natural', '.hebrew^10')]
+    elif field.get('es:boost'):
+        if field.get('es:keyword'):
+            return [('exact', '^10')]
+        else:
+            return [('inexact', '^10')]
+    elif field.get('es:keyword'):
+        return [('exact', '')]
+    elif field.get('es:autocomplete'):
+        return [('inexact', ''), ('inexact', '_2gram'), ('inexact', '_3gram')]
+    else:
+        return [('inexact', '')]
+
+
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
@@ -36,7 +56,8 @@ blueprint = apies_blueprint(app,
         for t in TYPES
     ),
     f'{index_name}__docs',
-    debug_queries=True
+    debug_queries=True,
+    text_field_rules=text_field_rules
 )
 app.register_blueprint(blueprint, url_prefix='/api/idx/')
 
