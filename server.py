@@ -11,6 +11,8 @@ from apies import apies_blueprint
 
 
 def text_field_rules(field):
+    if field['name'] not in ('name', 'service_name'):
+        return []
     if field.get('es:title'):
         if field.get('es:keyword'):
             return [('exact', '^10')]
@@ -56,7 +58,8 @@ blueprint = apies_blueprint(app,
     f'{index_name}__docs',
     debug_queries=True,
     text_field_rules=text_field_rules,
-    multi_match_type='bool_prefix'
+    multi_match_type='bool_prefix',
+    dont_highlight=['*']
 )
 app.register_blueprint(blueprint, url_prefix='/api/idx/')
 
