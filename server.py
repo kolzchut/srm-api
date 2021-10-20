@@ -55,7 +55,7 @@ blueprint = apies_blueprint(app,
         (t, f'{index_name}__{t}')
         for t in TYPES
     ),
-    f'{index_name}__docs',
+    f'{index_name}__cards',
     debug_queries=True,
     text_field_rules=text_field_rules,
     multi_match_type='bool_prefix',
