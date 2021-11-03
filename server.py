@@ -37,7 +37,7 @@ class SRMQuery(Query):
             situations = extras.split('|')
             by_kind = dict()
             for situation in situations:
-                prefix = situation.split(':')[:2].join(':')
+                prefix = ':'.join(situation.split(':')[:2])
                 if situation != prefix:
                     by_kind.setdefault(prefix, []).append(situation)
             if len(by_kind) > 0:
@@ -64,7 +64,7 @@ class SRMQuery(Query):
                             minimum_should_match=1
                         )
                     ))
-                print('MMMMUST!', must)
+                logging.debug('MMMMUST! %r', must)
         return self
 
 
