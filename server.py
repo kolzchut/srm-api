@@ -40,9 +40,9 @@ class SRMQuery(Query):
             for situation in situations:
                 prefix = ':'.join(situation.split(':')[:2])
                 if situation != prefix:
-                    all_situations.append(situation)
                     if prefix != 'human_situations:age_group':
-                        by_kind.setdefault(prefix, []).append(situation)
+                        all_situations.append(situation)
+                    by_kind.setdefault(prefix, []).append(situation)
             if len(by_kind) > 0:
                 must = self.must('cards')
                 if len(by_kind) > 1:
