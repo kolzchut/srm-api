@@ -1,5 +1,5 @@
 import os
-import logging
+from apies.logger import logger
 from apies.query import Query
 
 from flask import Flask
@@ -42,29 +42,35 @@ class SRMQuery(Query):
                     by_kind.setdefault(prefix, []).append(situation)
             if len(by_kind) > 0:
                 must = self.must('cards')
-                for kind, situations in by_kind.items():
-                    must.append(dict(
-                        bool=dict(
-                            should=[
-                                dict(
-                                    terms=dict(
-                                        situation_ids=situations
-                                    )
-                                ),
-                                dict(
-                                    bool=dict(
-                                        must_not=dict(
-                                            term=dict(
-                                                situation_ids=kind
+                if len(by_kind) > 1:
+                    for kind, kind_situations in by_kind.items():
+                        must.append(dict(
+                            bool=dict(
+                                should=[
+                                    dict(
+                                        terms=dict(
+                                            situation_ids=kind_situations
+                                        )
+                                    ),
+                                    dict(
+                                        bool=dict(
+                                            must_not=dict(
+                                                term=dict(
+                                                    situation_ids=kind
+                                                )
                                             )
                                         )
                                     )
-                                )
-                            ],
-                            minimum_should_match=1
-                        )
-                    ))
-                logging.debug('MMMMUST! %r', must)
+                                ],
+                                minimum_should_match=1
+                            )
+                        ))
+                must.append(dict(
+                    terms=dict(
+                        situation_ids=situations
+                    )
+                ))
+                logger.debug('MMMMUST! %r', must)
         return self
 
 
