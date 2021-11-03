@@ -114,6 +114,7 @@ app.register_blueprint(blueprint, url_prefix='/api/idx/')
 if __name__=='__main__':
     app.run()
 else:
+    import logging
     gunicorn_error_logger = logging.getLogger('gunicorn.error')
     app.logger.handlers.extend(gunicorn_error_logger.handlers)
     app.logger.setLevel(logging.DEBUG)
