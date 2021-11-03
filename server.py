@@ -1,5 +1,6 @@
 import os
 import logging
+from apies.query import Query
 
 from flask import Flask
 from flask_cors import CORS
@@ -27,6 +28,44 @@ def text_field_rules(field):
         return [('exact', '')]
     else:
         return [('inexact', '')]
+
+
+class SRMQuer(Query):
+
+    def apply_extra(self, extras):
+        if extras:
+            situations = extras.split('|')
+            by_kind = dict()
+            for situation in situations:
+                prefix = situation.split(':')[:2].join(':')
+                if situation != prefix:
+                    by_kind.setdefault(prefix, []).append(situation)
+            if len(by_kind) > 0:
+                must = self.must('cards')
+                for kind, situations in by_kind.items():
+                    must.append(dict(
+                        bool=dict(
+                            should=[
+                                dict(
+                                    terms=dict(
+                                        situation_ids=situations
+                                    )
+                                ),
+                                dict(
+                                    bool=dict(
+                                        must_not=dict(
+                                            term=dict(
+                                                situation_ids=kind
+                                            )
+                                        )
+                                    )
+                                )
+                            ],
+                            minimum_should_match=1
+                        )
+                    ))
+                print('MMMMUST!', must)
+        return self
 
 
 app = Flask(__name__)
@@ -59,7 +98,8 @@ blueprint = apies_blueprint(app,
     debug_queries=True,
     text_field_rules=text_field_rules,
     multi_match_type='bool_prefix',
-    dont_highlight=['*']
+    dont_highlight=['*'],
+    query_cls=SRMQuery,
 )
 app.register_blueprint(blueprint, url_prefix='/api/idx/')
 
