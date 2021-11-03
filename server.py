@@ -30,7 +30,7 @@ def text_field_rules(field):
         return [('inexact', '')]
 
 
-class SRMQuer(Query):
+class SRMQuery(Query):
 
     def apply_extra(self, extras):
         if extras:
