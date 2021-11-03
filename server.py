@@ -35,10 +35,12 @@ class SRMQuery(Query):
     def apply_extra(self, extras):
         if extras:
             situations = extras.split('|')
+            all_situations = []
             by_kind = dict()
             for situation in situations:
                 prefix = ':'.join(situation.split(':')[:2])
                 if situation != prefix:
+                    all_situations.append(situation)
                     by_kind.setdefault(prefix, []).append(situation)
             if len(by_kind) > 0:
                 must = self.must('cards')
@@ -67,7 +69,7 @@ class SRMQuery(Query):
                         ))
                 must.append(dict(
                     terms=dict(
-                        situation_ids=situations
+                        situation_ids=all_situations
                     )
                 ))
                 logger.debug('MMMMUST! %r', must)
