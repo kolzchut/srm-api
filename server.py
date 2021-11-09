@@ -44,35 +44,37 @@ class SRMQuery(Query):
                         all_situations.append(situation)
                     by_kind.setdefault(prefix, []).append(situation)
             if len(by_kind) > 0:
-                must = self.must('cards')
-                if len(by_kind) > 1:
-                    for kind, kind_situations in by_kind.items():
-                        must.append(dict(
-                            bool=dict(
-                                should=[
-                                    dict(
-                                        terms=dict(
-                                            situation_ids=kind_situations
-                                        )
-                                    ),
-                                    dict(
-                                        bool=dict(
-                                            must_not=dict(
-                                                term=dict(
-                                                    situation_ids=kind
+                for t in self.types:
+                   if t in ('cards', 'points'): 
+                        must = self.must(t)
+                        if len(by_kind) > 1:
+                            for kind, kind_situations in by_kind.items():
+                                must.append(dict(
+                                    bool=dict(
+                                        should=[
+                                            dict(
+                                                terms=dict(
+                                                    situation_ids=kind_situations
+                                                )
+                                            ),
+                                            dict(
+                                                bool=dict(
+                                                    must_not=dict(
+                                                        term=dict(
+                                                            situation_ids=kind
+                                                        )
+                                                    )
                                                 )
                                             )
-                                        )
+                                        ],
+                                        minimum_should_match=1
                                     )
-                                ],
-                                minimum_should_match=1
+                                ))
+                        must.append(dict(
+                            terms=dict(
+                                situation_ids=all_situations
                             )
                         ))
-                must.append(dict(
-                    terms=dict(
-                        situation_ids=all_situations
-                    )
-                ))
         return self
 
 
