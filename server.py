@@ -36,13 +36,18 @@ class SRMQuery(Query):
         if extras:
             situations = extras.split('|')
             all_situations = []
+            spare_all_situations = []
             by_kind = dict()
             for situation in situations:
                 prefix = ':'.join(situation.split(':')[:2])
                 if situation != prefix:
                     if prefix != 'human_situations:age_group':
                         all_situations.append(situation)
+                    else:
+                        spare_all_situations.append(situation)
                     by_kind.setdefault(prefix, []).append(situation)
+            if len(all_situations) == 0:
+                all_situations = spare_all_situations
             if len(by_kind) > 0:
                 for t in self.types:
                    if t in ('cards', 'points'): 
