@@ -75,6 +75,8 @@ class SRMQuery(Query):
                                 situation_ids=all_situations
                             )
                         ))
+        if 'points' in self.types:
+            self.q['points']['collapse'] = dict(field='point_id')
         return self
 
 
