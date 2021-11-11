@@ -70,11 +70,12 @@ class SRMQuery(Query):
                                         minimum_should_match=1
                                     )
                                 ))
-                        must.append(dict(
-                            terms=dict(
-                                situation_ids=all_situations
-                            )
-                        ))
+                        if all_situations:
+                            must.append(dict(
+                                terms=dict(
+                                    situation_ids=all_situations
+                                )
+                            ))
         if 'points' in self.types:
             self.q['points']['collapse'] = dict(field='point_id')
         return self
