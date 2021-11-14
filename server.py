@@ -100,7 +100,7 @@ app.register_blueprint(
 
 # ES API
 index_name = os.environ['ES_INDEX_NAME']
-TYPES = ['cards', 'places', 'responses', 'points']
+TYPES = ['cards', 'places', 'responses', 'points', 'presets']
 datapackages = [x.strip() for x in os.environ['ES_DATAPACKAGE'].split('\n') if x.strip()]
 blueprint = apies_blueprint(app,
     datapackages,
