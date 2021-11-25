@@ -3,5 +3,5 @@ sqlalchemy<=2
 flask
 flask-cors
 psycopg2-binary
-apies>=1.5.4
+apies>=1.5.5
 apisql>=0.1.6
