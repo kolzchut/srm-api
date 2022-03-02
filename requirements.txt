@@ -5,3 +5,4 @@ flask-cors
 psycopg2-binary
 apies>=1.5.5
 apisql>=0.1.6
+itsdangerous==2.0.1
