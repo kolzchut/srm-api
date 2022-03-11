@@ -33,50 +33,53 @@ class SRMQuery(Query):
     def apply_extra(self, extras):
         if extras:
             situations = extras.split('|')
-            all_situations = []
-            spare_all_situations = []
+
+            specific_situations = dict()
+            must_match_one = list()
             by_kind = dict()
+            # all_situations = []
+            # spare_all_situations = []
+            # by_kind = dict()
             for situation in situations:
                 prefix = ':'.join(situation.split(':')[:2])
-                if situation != prefix:
-                    if prefix != 'human_situations:age_group':
-                        all_situations.append(situation)
-                    else:
-                        spare_all_situations.append(situation)
-                    by_kind.setdefault(prefix, []).append(situation)
-            if len(all_situations) == 0:
-                all_situations = spare_all_situations
+                specific_situations.setdefault(prefix, []).append(situation)
+            for prefix, situations in specific_situations.items():
+                if len(situations) > 1:
+                    situations = [s for s in situations if s != prefix]
+                    by_kind[prefix] = situations
+                if prefix != 'human_situations:age_group':
+                    must_match_one.extend(situations)
+
             if len(by_kind) > 0:
                 for t in self.types:
                    if t in ('cards', 'points'): 
                         must = self.must(t)
-                        if len(by_kind) > 1:
-                            for kind, kind_situations in by_kind.items():
-                                must.append(dict(
-                                    bool=dict(
-                                        should=[
-                                            dict(
-                                                terms=dict(
-                                                    situation_ids=kind_situations
-                                                )
-                                            ),
-                                            dict(
-                                                bool=dict(
-                                                    must_not=dict(
-                                                        term=dict(
-                                                            situation_ids=kind
-                                                        )
+                        for kind, kind_situations in by_kind.items():
+                            must.append(dict(
+                                bool=dict(
+                                    should=[
+                                        dict(
+                                            terms=dict(
+                                                situation_ids=kind_situations
+                                            )
+                                        ),
+                                        dict(
+                                            bool=dict(
+                                                must_not=dict(
+                                                    term=dict(
+                                                        situation_ids=kind
                                                     )
                                                 )
                                             )
-                                        ],
-                                        minimum_should_match=1
-                                    )
-                                ))
-                        if all_situations:
+                                        )
+                                    ],
+                                    minimum_should_match=1
+                                )
+                            ))
+                        if must_match_one:
                             must.append(dict(
                                 terms=dict(
-                                    situation_ids=all_situations
+                                    situation_ids=must_match_one
                                 )
                             ))
         # if 'points' in self.types:
