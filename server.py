@@ -51,9 +51,9 @@ class SRMQuery(Query):
             if len(by_kind) > 0:
                 for t in self.types:
                    if t in ('cards', 'points'): 
-                        must = self.must(t)
+                        filter_must = self.filter(t).setdefault('must', [])
                         for kind, kind_situations in by_kind.items():
-                            must.append(dict(
+                            filter_must.append(dict(
                                 bool=dict(
                                     should=[
                                         dict(
@@ -75,9 +75,20 @@ class SRMQuery(Query):
                                 )
                             ))
                         if must_match_one:
+                            must = self.must(t)
                             must.append(dict(
-                                terms=dict(
-                                    situation_ids=must_match_one
+                                bool=dict(
+                                    should=[
+                                        dict(
+                                            term=dict(
+                                                situation_ids=dict(
+                                                    value=s
+                                                )
+                                            )
+                                        )
+                                        for s in must_match_one
+                                    ],
+                                    minimum_should_match=1
                                 )
                             ))
 
