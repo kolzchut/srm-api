@@ -37,9 +37,7 @@ class SRMQuery(Query):
             specific_situations = dict()
             must_match_one = list()
             by_kind = dict()
-            # all_situations = []
-            # spare_all_situations = []
-            # by_kind = dict()
+
             for situation in situations:
                 prefix = ':'.join(situation.split(':')[:2])
                 specific_situations.setdefault(prefix, []).append(situation)
@@ -47,7 +45,7 @@ class SRMQuery(Query):
                 if len(situations) > 1:
                     situations = [s for s in situations if s != prefix]
                     by_kind[prefix] = situations
-                if prefix != 'human_situations:age_group':
+                if prefix not in ('human_situations:age_group', 'human_situations:language'):
                     must_match_one.extend(situations)
 
             if len(by_kind) > 0:
@@ -82,6 +80,7 @@ class SRMQuery(Query):
                                     situation_ids=must_match_one
                                 )
                             ))
+
         # if 'points' in self.types:
         #     self.q['points']['collapse'] = dict(field='point_id')
         return self
