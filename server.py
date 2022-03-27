@@ -12,7 +12,7 @@ from apies import apies_blueprint
 
 
 def text_field_rules(field):
-    if field['name'].split('_')[-1] in ('name', 'purpose', 'description', 'details'):
+    if field['name'].split('_')[-1] in ('name', 'purpose', 'description', 'details', 'synonyms'):
         print('CONVERTED TYPE FOR HEBREW', field['name'])
         return [('inexact', '^10'), ('natural', '.hebrew^3')]
     if field.get('es:title'):
