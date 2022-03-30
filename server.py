@@ -138,6 +138,7 @@ blueprint = apies_blueprint(app,
         points=[]
     ),
     multi_match_type='bool_prefix',
+    multi_match_operator='or',
     dont_highlight=['*'],
     query_cls=SRMQuery,
 )
