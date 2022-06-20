@@ -107,7 +107,7 @@ CORS(app, supports_credentials=True)
 app.register_blueprint(
     apisql_blueprint(
         connection_string=os.environ['DATABASE_READONLY_URL'],
-        max_rows=10000, debug=False
+        max_rows=20000, debug=False
     ),
     url_prefix='/api/db/'
 )
