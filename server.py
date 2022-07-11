@@ -33,6 +33,8 @@ def text_field_rules(field):
 
 class SRMQuery(Query):
 
+    TRIVIAL_PREFIXES = ('human_situations:age_group', 'human_situations:language')
+
     def apply_extra(self, extras):
         if extras:
             situations = extras.split('|')
@@ -40,15 +42,19 @@ class SRMQuery(Query):
             specific_situations = dict()
             must_match_one = list()
             by_kind = dict()
+            non_trivial_prefixes = set()
 
             for situation in situations:
                 prefix = ':'.join(situation.split(':')[:2])
                 specific_situations.setdefault(prefix, []).append(situation)
+                if prefix not in self.TRIVIAL_PREFIXES:
+                    non_trivial_prefixes.add(prefix)
+
             for prefix, situations in specific_situations.items():
                 if len(situations) > 1:
                     situations = [s for s in situations if s != prefix]
                     by_kind[prefix] = situations
-                if prefix not in ('human_situations:age_group', 'human_situations:language'):
+                if len(non_trivial_prefixes) == 0 or prefix not in self.TRIVIAL_PREFIXES:
                     must_match_one.extend(situations)
 
             if len(by_kind) > 0:
