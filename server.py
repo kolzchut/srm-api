@@ -15,6 +15,8 @@ def text_field_rules(field):
     if field['name'].split('_')[-1] in ('name', 'purpose', 'description', 'details', 'synonyms'):
         print('CONVERTED TYPE FOR HEBREW', field['name'])
         return [('inexact', '^10'), ('natural', '.hebrew^3')]
+    if field.get('es:autocomplete'):
+        return [('inexact', ''), ('inexact', '._2gram'), ('inexact', '._3gram')]
     if field.get('es:title'):
         if field.get('es:keyword'):
             return [('exact', '^10')]
@@ -120,7 +122,7 @@ app.register_blueprint(
 
 # ES API
 index_name = os.environ['ES_INDEX_NAME']
-TYPES = ['cards', 'places', 'responses', 'points', 'presets', 'geo_data', 'orgs']
+TYPES = ['cards', 'places', 'responses', 'points', 'presets', 'geo_data', 'orgs', 'autocomplete']
 datapackages = [x.strip() for x in os.environ['ES_DATAPACKAGE'].split('\n') if x.strip()]
 blueprint = apies_blueprint(app,
     datapackages,
