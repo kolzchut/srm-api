@@ -147,7 +147,7 @@ blueprint = apies_blueprint(app,
     ),
     multi_match_type='bool_prefix',
     multi_match_operator='or',
-    dont_highlight=['*'],
+    # dont_highlight=['*'],
     query_cls=SRMQuery,
 )
 app.register_blueprint(blueprint, url_prefix='/api/idx/')
