@@ -122,7 +122,7 @@ app.register_blueprint(
 
 # ES API
 index_name = os.environ['ES_INDEX_NAME']
-TYPES = ['cards', 'places', 'responses', 'points', 'presets', 'geo_data', 'orgs', 'autocomplete']
+TYPES = ['cards', 'places', 'responses', 'situations', 'points', 'presets', 'geo_data', 'orgs', 'autocomplete']
 datapackages = [x.strip() for x in os.environ['ES_DATAPACKAGE'].split('\n') if x.strip()]
 blueprint = apies_blueprint(app,
     datapackages,
