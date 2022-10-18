@@ -1,14 +1,16 @@
 import os
-from apies.logger import logger
-from apies.query import Query
 
 from flask import Flask
 from flask_cors import CORS
 
 import elasticsearch
+from datapackage import Package
 
 from apisql import apisql_blueprint
+
 from apies import apies_blueprint
+from apies.logger import logger
+from apies.query import Query
 
 
 def text_field_rules(field):
@@ -122,8 +124,12 @@ app.register_blueprint(
 
 # ES API
 index_name = os.environ['ES_INDEX_NAME']
-TYPES = ['cards', 'places', 'responses', 'situations', 'points', 'presets', 'geo_data', 'orgs', 'autocomplete']
+# TYPES = ['cards', 'places', 'responses', 'situations', 'points', 'presets', 'geo_data', 'orgs', 'autocomplete']
 datapackages = [x.strip() for x in os.environ['ES_DATAPACKAGE'].split('\n') if x.strip()]
+datapackages = [Package(x) for x in datapackages]
+types = [p.resources[0].name for p in datapackages]
+print('TYPES:', types)
+
 blueprint = apies_blueprint(app,
     datapackages,
     elasticsearch.Elasticsearch(
@@ -132,19 +138,19 @@ blueprint = apies_blueprint(app,
     ),
     dict(
         (t, f'{index_name}__{t}')
-        for t in TYPES
+        for t in types
     ),
     f'{index_name}__cards',
     debug_queries=True,
     text_field_rules=text_field_rules,
-    text_field_select=dict(
-        cards=['service_name', 'organization_name', 'responses.name', 'branch_address', 
-               'branch_name', 'situations.name', 'responses.synonyms', 
-               'situations.synonyms', 'service_details', 'service_description'],
-        places=['name'],
-        responses=['name', 'synonyms'],
-        points=[]
-    ),
+    # text_field_select=dict(
+    #     cards=['service_name', 'organization_name', 'responses.name', 'branch_address', 
+    #            'branch_name', 'situations.name', 'responses.synonyms', 
+    #            'situations.synonyms', 'service_details', 'service_description'],
+    #     places=['name'],
+    #     responses=['name', 'synonyms'],
+    #     points=[]
+    # ),
     multi_match_type='bool_prefix',
     multi_match_operator='or',
     query_cls=SRMQuery,
