@@ -56,7 +56,7 @@ class SRMQuery(Query):
 
     def process_extra(self, return_value, response):
         if self.extract_agg:
-            for _type, resp in zip(self.q.types, response['responses']):
+            for _type, resp in zip(self.types, response['responses']):
                 if _type == 'cards':
                     return_value['situations'] = resp['aggs']['situations']
 
