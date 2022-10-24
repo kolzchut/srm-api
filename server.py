@@ -43,19 +43,22 @@ class SRMQuery(Query):
         if extras:
             extras = extras.split('|')
             if 'distinct-situations' in extras:
-                self.query['aggs'] = {
-                    'situations': {
-                        'value_count': {
-                            'field': 'situations.id'
+                if 'cards' in self.q:
+                    self.q['cards']['aggs'] = {
+                        'situations': {
+                            'value_count': {
+                                'field': 'situations.id'
+                            }
                         }
                     }
-                }
-                self.extract_agg = True
+                    self.extract_agg = True
         return self
 
     def process_extra(self, return_value, response):
         if self.extract_agg:
-            return_value['situations'] = response['aggs']['situations']
+            for _type, resp in zip(self.q.types, response['responses']):
+                if _type == 'cards':
+                    return_value['situations'] = resp['aggs']['situations']
 
 
 app = Flask(__name__)
