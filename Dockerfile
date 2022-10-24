@@ -9,9 +9,10 @@ ADD requirements.txt .
 RUN pip install -r requirements.txt
 
 ADD server.py .
+ADD prepare.py .
+ADD entrypoint.sh .
 
 EXPOSE 5000
 USER api
 
-ENTRYPOINT [ "/usr/local/bin/gunicorn" ]
-CMD [ "-w", "4", "--bind", "0.0.0.0:5000", "server:app" ]
+ENTRYPOINT [ "/app/entrypoint.sh" ]

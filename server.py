@@ -1,4 +1,5 @@
 import os
+import json
 
 from flask import Flask
 from flask_cors import CORS
@@ -46,12 +47,10 @@ class SRMQuery(Query):
                 if x in ('distinct-situations', 'distinct-responses'):
                     if 'cards' in self.q:
                         field = x[9:]
-                        self.q['cards']['aggs'] = {
-                            field: {
-                                'terms': {
-                                    'field': f'{field}.id',
-                                    'size': 1000
-                                }
+                        self.q['cards'].setdefault('aggs', {})[field] = {
+                            'terms': {
+                                'field': f'{field}.id',
+                                'size': 1000
                             }
                         }
                         self.extract_agg = True
@@ -80,7 +79,7 @@ app.register_blueprint(
 # ES API
 index_name = os.environ['ES_INDEX_NAME']
 # TYPES = ['cards', 'places', 'responses', 'situations', 'points', 'presets', 'geo_data', 'orgs', 'autocomplete']
-datapackages = [x.strip() for x in os.environ['ES_DATAPACKAGE'].split('\n') if x.strip()]
+datapackages = json.load(open('datapackages.json'))
 datapackages = [Package(x) for x in datapackages]
 types = [p.resources[0].name for p in datapackages]
 print('TYPES:', types)
