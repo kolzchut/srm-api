@@ -37,77 +37,25 @@ def text_field_rules(field):
 
 class SRMQuery(Query):
 
-    TRIVIAL_PREFIXES = ('human_situations:age_group', 'human_situations:language')
+    extract_agg = False
 
     def apply_extra(self, extras):
         if extras:
-            situations = extras.split('|')
-
-            specific_situations = dict()
-            must_match_one = list()
-            by_kind = dict()
-            non_trivial_prefixes = set()
-
-            for situation in situations:
-                prefix = ':'.join(situation.split(':')[:2])
-                specific_situations.setdefault(prefix, []).append(situation)
-                if prefix not in self.TRIVIAL_PREFIXES:
-                    non_trivial_prefixes.add(prefix)
-
-            for prefix, situations in specific_situations.items():
-                if len(situations) > 1:
-                    situations = [s for s in situations if s != prefix]
-                    by_kind[prefix] = situations
-                if len(non_trivial_prefixes) == 0 or prefix not in self.TRIVIAL_PREFIXES:
-                    must_match_one.extend(situations)
-
-            if len(by_kind) > 0:
-                for t in self.types:
-                   if t in ('cards', 'points'): 
-                        filter_must = self.filter(t).setdefault('must', [])
-                        for kind, kind_situations in by_kind.items():
-                            filter_must.append(dict(
-                                bool=dict(
-                                    should=[
-                                        dict(
-                                            terms=dict(
-                                                situation_ids=kind_situations
-                                            )
-                                        ),
-                                        dict(
-                                            bool=dict(
-                                                must_not=dict(
-                                                    term=dict(
-                                                        situation_ids=kind
-                                                    )
-                                                )
-                                            )
-                                        )
-                                    ],
-                                    minimum_should_match=1
-                                )
-                            ))
-                        if must_match_one:
-                            must = self.must(t)
-                            must.append(dict(
-                                bool=dict(
-                                    should=[
-                                        dict(
-                                            term=dict(
-                                                situation_ids=dict(
-                                                    value=s
-                                                )
-                                            )
-                                        )
-                                        for s in must_match_one
-                                    ],
-                                    minimum_should_match=1
-                                )
-                            ))
-
-        # if 'points' in self.types:
-        #     self.q['points']['collapse'] = dict(field='point_id')
+            extras = extras.split('|')
+            if 'distinct-situations' in extras:
+                self.query['aggs'] = {
+                    'situations': {
+                        'value_count': {
+                            'field': 'situations.id'
+                        }
+                    }
+                }
+                self.extract_agg = True
         return self
+
+    def process_extra(self, return_value, response):
+        if self.extract_agg:
+            return_value['situations'] = response['aggs']['situations']
 
 
 app = Flask(__name__)
