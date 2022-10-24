@@ -42,24 +42,27 @@ class SRMQuery(Query):
     def apply_extra(self, extras):
         if extras:
             extras = extras.split('|')
-            if 'distinct-situations' in extras:
-                if 'cards' in self.q:
-                    self.q['cards']['aggs'] = {
-                        'situations': {
-                            'terms': {
-                                'field': 'situations.id',
-                                'size': 1000
+            for x in extras:
+                if x in ('distinct-situations', 'distinct-responses'):
+                    if 'cards' in self.q:
+                        field = x[9:]
+                        self.q['cards']['aggs'] = {
+                            field: {
+                                'terms': {
+                                    'field': f'{field}.id',
+                                    'size': 1000
+                                }
                             }
                         }
-                    }
-                    self.extract_agg = True
+                        self.extract_agg = True
         return self
 
     def process_extra(self, return_value, response):
         if self.extract_agg:
             for _type, resp in zip(self.types, response['responses']):
                 if _type == 'cards':
-                    return_value['situations'] = resp['aggregations']['situations']['buckets']
+                    for k, v in resp['aggregations'].items():
+                        return_value[k] = v['buckets']
 
 
 app = Flask(__name__)
