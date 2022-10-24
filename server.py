@@ -46,8 +46,9 @@ class SRMQuery(Query):
                 if 'cards' in self.q:
                     self.q['cards']['aggs'] = {
                         'situations': {
-                            'value_count': {
-                                'field': 'situations.id'
+                            'terms': {
+                                'field': 'situations.id',
+                                'size': 1000
                             }
                         }
                     }
@@ -58,7 +59,7 @@ class SRMQuery(Query):
         if self.extract_agg:
             for _type, resp in zip(self.types, response['responses']):
                 if _type == 'cards':
-                    return_value['situations'] = resp['aggs']['situations']
+                    return_value['situations'] = resp['aggregations']['situations']['buckets']
 
 
 app = Flask(__name__)
