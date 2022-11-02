@@ -54,6 +54,15 @@ class SRMQuery(Query):
                             }
                         }
                         self.extract_agg = True
+                if x == 'point-ids':
+                    if 'cards' in self.q:
+                        self.q['cards'].setdefault('aggs', {})[field] = {
+                            'terms': {
+                                'field': 'point_id',
+                                'size': 2500
+                            }
+                        }
+                        self.extract_agg = True
         return self
 
     def process_extra(self, return_value, response):
