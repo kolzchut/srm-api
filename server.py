@@ -56,9 +56,10 @@ class SRMQuery(Query):
                         self.extract_agg = True
                 if x == 'point-ids':
                     if 'cards' in self.q:
+                        field = 'point_id'
                         self.q['cards'].setdefault('aggs', {})[field] = {
                             'terms': {
-                                'field': 'point_id',
+                                'field': field,
                                 'size': 2500
                             }
                         }
