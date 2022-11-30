@@ -54,6 +54,21 @@ class SRMQuery(Query):
                             }
                         }
                         self.extract_agg = True
+                if x == 'collapse':
+                    if 'cards' in self.q:
+                        field = 'collapse_key'
+                        self.q['cards'].setdefault('aggs', {})[field] = {
+                            'terms': {
+                                'field': field,
+                                'size': 20000,
+                                'min_doc_count': 2
+                            }
+                        }
+                        self.q['cards']['collapse'] = {
+                            'field': field
+                        }
+                        self.extract_agg = True
+
                 if x == 'point-ids':
                     if 'cards' in self.q:
                         field = 'point_id'
