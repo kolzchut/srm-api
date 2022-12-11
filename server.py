@@ -18,7 +18,7 @@ def text_field_rules(field):
     if field['name'].split('_')[-1] in ('name', 'purpose', 'description', 'details', 'synonyms', 'heb'):
         print('CONVERTED TYPE FOR HEBREW', field['name'])
         return [('inexact', '^10'), ('natural', '.hebrew^3')]
-    if field['name'].split('_')[-1] in ('id',):
+    if field['name'].split('_')[-1] in ('id', 'ids'):
         return []
     if field.get('es:autocomplete'):
         return [('inexact', '^10'), ('inexact', '._2gram^10'), ('inexact', '._3gram^10')]
