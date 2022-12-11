@@ -59,8 +59,9 @@ class SRMQuery(Query):
                 if x == 'did-you-mean':
                     if 'cards' in self.q:
                         self.q['cards'].setdefault('aggs', {})['inner_pac'] = {
-                            'sampler': {
-                                'shard_size': 100
+                            'diversified_sampler': {
+                                'shard_size': 50,
+                                'field': 'service_id'
                             },
                             'aggs': {
                                 'possible_autocomplete': {
