@@ -54,6 +54,15 @@ class SRMQuery(Query):
                             }
                         }
                         self.extract_agg = True
+                if x == 'did-you-mean':
+                    if 'cards' in self.q:
+                        self.q['cards'].setdefault('aggs', {})['possible_autocomplete'] = {
+                            'terms': {
+                                'field': f'possible_autocomplete',
+                                'size': 10
+                            }
+                        }
+                        self.extract_agg = True
                 if x == 'collapse':
                     if 'cards' in self.q:
                         field = 'collapse_key'
