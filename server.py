@@ -18,7 +18,7 @@ def text_field_rules(field):
     if field['name'].split('_')[-1] in ('name', 'purpose', 'description', 'details', 'synonyms', 'heb'):
         print('CONVERTED TYPE FOR HEBREW', field['name'])
         return [('inexact', '^10'), ('natural', '.hebrew^3')]
-    if field['name'].split('_')[-1] in ('id', 'ids'):
+    if field['name'].split('_')[-1] in ('id', 'ids', 'categories', 'category', 'key'):
         return []
     if field.get('es:autocomplete'):
         return [('inexact', '^10'), ('inexact', '._2gram^10'), ('inexact', '._3gram^10')]
@@ -58,10 +58,17 @@ class SRMQuery(Query):
                         self.extract_agg = True
                 if x == 'did-you-mean':
                     if 'cards' in self.q:
-                        self.q['cards'].setdefault('aggs', {})['possible_autocomplete'] = {
-                            'terms': {
-                                'field': f'possible_autocomplete',
-                                'size': 10
+                        self.q['cards'].setdefault('aggs', {})['inner_pac'] = {
+                            'sampler': {
+                                'shard_size': 100
+                            },
+                            'aggs': {
+                                'possible_autocomplete': {
+                                    'terms': {
+                                        'field': "possible_autocomplete",
+                                        'size': 10
+                                    }
+                                }
                             }
                         }
                         self.extract_agg = True
@@ -99,7 +106,12 @@ class SRMQuery(Query):
             for _type, resp in zip(self.types, response['responses']):
                 if _type == 'cards':
                     for k, v in resp['aggregations'].items():
-                        return_value[k] = v['buckets']
+                        if k.startswith('inner_'):
+                            for k_, v_ in v.items():
+                                if k_ != 'doc_count':
+                                    return_value[k_] = v_['buckets']
+                        else:
+                            return_value[k] = v['buckets']
 
 
 app = Flask(__name__)
