@@ -100,6 +100,30 @@ class SRMQuery(Query):
                             }
                         }
                         self.extract_agg = True
+                if x == 'point-ids-extended':
+                    if 'cards' in self.q:
+                        field = 'point_id'
+                        self.q['cards'].setdefault('aggs', {})[field] = {
+                            'terms': {
+                                'field': field,
+                                'size': 2500,
+                                'aggs': {
+                                    'response_category': {
+                                        'terms': {
+                                            'field': 'response_category',
+                                            'size': 1
+                                        }
+                                    },
+                                    'branch_geometry': {
+                                        'terms': {
+                                            'field': 'coords',
+                                            'size': 1
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        self.extract_agg = True
         return self
 
     def process_extra(self, return_value, response):
