@@ -107,18 +107,18 @@ class SRMQuery(Query):
                             'terms': {
                                 'field': field,
                                 'size': 2500,
-                                'aggs': {
-                                    'response_category': {
-                                        'terms': {
-                                            'field': 'response_category',
-                                            'size': 1
-                                        }
-                                    },
-                                    'branch_geometry': {
-                                        'terms': {
-                                            'field': 'coords',
-                                            'size': 1
-                                        }
+                            },
+                            'aggs': {
+                                'response_category': {
+                                    'terms': {
+                                        'field': 'response_category',
+                                        'size': 1
+                                    }
+                                },
+                                'branch_geometry': {
+                                    'terms': {
+                                        'field': 'coords',
+                                        'size': 1
                                     }
                                 }
                             }
