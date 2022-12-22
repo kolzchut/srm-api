@@ -115,6 +115,12 @@ class SRMQuery(Query):
                                         'size': 1
                                     }
                                 },
+                                'branch_id': {
+                                    'terms': {
+                                        'field': 'branch_id',
+                                        'size': 99
+                                    }
+                                },
                                 'branch_geometry': {
                                     'terms': {
                                         'field': 'coords',
