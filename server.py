@@ -130,6 +130,10 @@ class SRMQuery(Query):
                             }
                         }
                         self.extract_agg = True
+                if x == 'national-services':
+                    if 'cards' in self.q:
+                        self.q['sort'].insert(0, {'national_service': 'asc'})
+
         return self
 
     def process_extra(self, return_value, response):
