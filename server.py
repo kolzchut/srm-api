@@ -132,7 +132,7 @@ class SRMQuery(Query):
                         self.extract_agg = True
                 if x == 'national-services':
                     if 'cards' in self.q:
-                        self.q['sort'].insert(0, {'national_service': 'asc'})
+                        self.q['sort'].insert(0, {'national_service': {'order': 'asc'}})
 
         return self
 
