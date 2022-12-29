@@ -41,6 +41,7 @@ def text_field_rules(field):
 class SRMQuery(Query):
 
     extract_agg = False
+    extract_viewport = False
 
     def apply_extra(self, extras):
         if extras:
@@ -133,7 +134,7 @@ class SRMQuery(Query):
                 if x == 'national-services':
                     if 'cards' in self.q:
                         self.q['cards']['sort'].insert(0, {'national_service': {'order': 'asc'}})
-                if x == 'bounds':
+                if x == 'viewport':
                     if 'cards' in self.q:
                         self.q['cards'].setdefault('aggs', {})['viewport'] = {
                             'geo_bounds': {
@@ -141,6 +142,7 @@ class SRMQuery(Query):
                                 'wrap_longitude': True
                             }
                         }
+                        self.extract_viewport = True
 
         return self
 
@@ -153,8 +155,13 @@ class SRMQuery(Query):
                             for k_, v_ in v.items():
                                 if k_ != 'doc_count':
                                     return_value[k_] = v_['buckets']
-                        else:
+                        elif 'buckets' in v:
                             return_value[k] = v['buckets']
+        if self.extract_viewport:
+            for _type, resp in zip(self.types, response['responses']):
+                if _type == 'cards':
+                    if 'viewport' in resp['aggregations']:
+                        return_value['viewport'] = resp['aggregations']['viewport']['bounds']
 
 
 app = Flask(__name__)
