@@ -133,6 +133,14 @@ class SRMQuery(Query):
                 if x == 'national-services':
                     if 'cards' in self.q:
                         self.q['cards']['sort'].insert(0, {'national_service': {'order': 'asc'}})
+                if x == 'bounds':
+                    if 'cards' in self.q:
+                        self.q['cards'].setdefault('aggs', {})['viewport'] = {
+                            'geo_bounds': {
+                                'field': 'branch_geometry',
+                                'wrap_longitude': True
+                            }
+                        }
 
         return self
 
