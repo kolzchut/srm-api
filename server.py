@@ -161,7 +161,11 @@ class SRMQuery(Query):
             for _type, resp in zip(self.types, response['responses']):
                 if _type == 'cards':
                     if 'viewport' in resp['aggregations']:
-                        return_value['viewport'] = resp['aggregations']['viewport']['bounds']
+                        viewport = resp['aggregations']['viewport']
+                        if 'bounds' in viewport:
+                            return_value['viewport'] = viewport['bounds']
+                        else:
+                            print('NO BOUNDS', viewport)
 
 
 app = Flask(__name__)
