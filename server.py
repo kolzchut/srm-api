@@ -15,7 +15,7 @@ from apies.query import Query
 
 
 def text_field_rules(field):
-    if field['name'].split('_')[-1] in ('name', 'purpose', 'description', 'details', 'synonyms', 'heb'):
+    if field.get('es:hebrew') or field['name'].split('_')[-1] in ('name', 'purpose', 'description', 'details', 'synonyms', 'heb'):
         print('CONVERTED TYPE FOR HEBREW', field['name'])
         return [('inexact', '^10'), ('natural', '.hebrew^3')]
     if field['name'].split('_')[-1] in ('id', 'ids', 'categories', 'category', 'key'):
