@@ -15,14 +15,15 @@ from apies.query import Query
 
 
 def text_field_rules(field):
-    if field.get('es:hebrew') or field['name'].split('_')[-1] in ('name', 'purpose', 'description', 'details', 'synonyms', 'heb'):
-        print('CONVERTED TYPE FOR HEBREW', field['name'])
-        return [('inexact', '^10'), ('natural', '.hebrew^3')]
     if field['name'].split('_')[-1] in ('id', 'ids', 'categories', 'category', 'key'):
         return []
-    if field.get('es:autocomplete'):
+    elif field.get('es:autocomplete'):
         return [('inexact', '^10'), ('inexact', '._2gram^10'), ('inexact', '._3gram^10')]
-    if field.get('es:title'):
+    elif field.get('es:hebrew') or field['name'].split('_')[-1] in ('name', 'synonyms', 'heb'):
+        return [('inexact', '^10'), ('natural', '.hebrew^3')]
+    elif field['name'].split('_')[-1] in ('purpose', 'description', 'details'):
+        return [('inexact', '^3'), ('natural', '.hebrew')]
+    elif field.get('es:title'):
         if field.get('es:keyword'):
             return [('exact', '^10')]
         else:
