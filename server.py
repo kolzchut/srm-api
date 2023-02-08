@@ -117,6 +117,12 @@ class SRMQuery(Query):
                                         'size': 1
                                     }
                                 },
+                                'branch_location_accurate': {
+                                    'terms': {
+                                        'field': 'branch_location_accurate',
+                                        'size': 1
+                                    }
+                                },
                                 'branch_id': {
                                     'terms': {
                                         'field': 'branch_id',
