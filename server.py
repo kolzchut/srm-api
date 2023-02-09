@@ -19,20 +19,20 @@ def text_field_rules(field):
         return []
     elif field.get('es:autocomplete'):
         return [('inexact', '^10'), ('inexact', '._2gram^10'), ('inexact', '._3gram^10')]
-    elif field.get('es:hebrew') or field['name'].split('_')[-1] in ('name', 'synonyms', 'heb'):
+    elif field['name'].split('_')[-1] in ('name', 'synonyms', 'heb'):
         return [('inexact', '^10'), ('natural', '.hebrew^3')]
-    elif field['name'].split('_')[-1] in ('purpose', 'description', 'details'):
+    elif field.get('es:hebrew') or field['name'].split('_')[-1] in ('purpose', 'description', 'details', 'query'):
         return [('inexact', '^3'), ('natural', '.hebrew')]
-    elif field.get('es:title'):
-        if field.get('es:keyword'):
-            return [('exact', '^10')]
-        else:
-            return [('inexact', '^3')]
-    elif field.get('es:boost'):
-        if field.get('es:keyword'):
-            return [('exact', '^10')]
-        else:
-            return [('inexact', '^10')]
+    # elif field.get('es:title'):
+    #     if field.get('es:keyword'):
+    #         return [('exact', '^10')]
+    #     else:
+    #         return [('inexact', '^3')]
+    # elif field.get('es:boost'):
+    #     if field.get('es:keyword'):
+    #         return [('exact', '^10')]
+    #     else:
+    #         return [('inexact', '^10')]
     elif field.get('es:keyword'):
         return [('exact', '')]
     else:
