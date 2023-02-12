@@ -3,7 +3,7 @@ sqlalchemy<=2
 flask
 flask-cors
 psycopg2-binary
-apies>=1.9.0
+apies>=1.9.1
 apisql>=0.1.6
 itsdangerous==2.0.1
 jinja2<3.1
