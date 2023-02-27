@@ -48,22 +48,29 @@ class SRMQuery(Query):
         if extras:
             extras = extras.split('|')
             for x in extras:
-                if x in ('distinct-situations', 'distinct-responses'):
+                if x == 'distinct-situations':
                     if 'cards' in self.q:
-                        field = x[9:]
-                        self.q['cards'].setdefault('aggs', {})[field] = {
+                        self.q['cards'].setdefault('aggs', {})['situations'] = {
                             'terms': {
-                                'field': f'{field}.id',
+                                'field': f'situations.id',
                                 'size': 1000
                             }
                         }
-                        if field == 'responses':
-                            self.q['cards'].setdefault('aggs', {})['categories'] = {
-                                'terms': {
-                                    'field': 'response_categories',
-                                    'size': 20
-                                }
+                        self.extract_agg = True
+                if x in 'distinct-responses':
+                    if 'cards' in self.q:
+                        self.q['cards'].setdefault('aggs', {})['responses'] = {
+                            'terms': {
+                                'field': f'responses_parents.id',
+                                'size': 1000
                             }
+                        }
+                        self.q['cards'].setdefault('aggs', {})['categories'] = {
+                            'terms': {
+                                'field': 'response_categories',
+                                'size': 20
+                            }
+                        }
                         self.extract_agg = True
                 if x == 'did-you-mean':
                     if 'cards' in self.q:
