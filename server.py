@@ -59,12 +59,28 @@ class SRMQuery(Query):
                         self.extract_agg = True
                 if x in 'distinct-responses':
                     if 'cards' in self.q:
-                        self.q['cards'].setdefault('aggs', {})['responses'] = {
-                            'terms': {
-                                'field': f'responses_parents.id',
-                                'size': 1000
+                        min_score = self.q['cards'].get('min_score', 0)
+                        if min_score > 0:
+                            self.q['cards'].setdefault('aggs', {})['responses'] = {
+                                'terms': {
+                                    'field': f'responses_parents.id',
+                                    'size': 1000
+                                },
+                                'aggs': {
+                                    'max_score': {
+                                        'max': {
+                                            'script': 'doc.score'
+                                        }
+                                    }
+                                },
                             }
-                        }
+                        else:
+                            self.q['cards'].setdefault('aggs', {})['responses'] = {
+                                'terms': {
+                                    'field': f'responses_parents.id',
+                                    'size': 1000
+                                }
+                            }
                         self.q['cards'].setdefault('aggs', {})['categories'] = {
                             'terms': {
                                 'field': 'response_categories',
