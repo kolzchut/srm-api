@@ -69,7 +69,7 @@ class SRMQuery(Query):
                                 'aggs': {
                                     'max_score': {
                                         'max': {
-                                            'script': 'doc.score'
+                                            'script': '_score'
                                         }
                                     }
                                 },
