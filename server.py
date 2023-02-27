@@ -247,7 +247,7 @@ blueprint = apies_blueprint(app,
     #     points=[]
     # ),
     multi_match_type='bool_prefix',
-    multi_match_operator='or',
+    multi_match_operator='and',
     query_cls=SRMQuery,
 )
 app.register_blueprint(blueprint, url_prefix='/api/idx/')
