@@ -20,9 +20,9 @@ def text_field_rules(field):
     elif field.get('es:autocomplete'):
         return [('inexact', '^10'), ('inexact', '._2gram^10'), ('inexact', '._3gram^10')]
     elif field['name'].split('_')[-1] in ('name', 'synonyms', 'heb'):
-        return [('inexact', '^10'), ('natural', '.hebrew^3')]
+        return [('inexact', '^10'), ('natural', '.hebrew^10')]
     elif field.get('es:hebrew') or field['name'].split('_')[-1] in ('purpose', 'description', 'details', 'query'):
-        return [('inexact', '^3'), ('natural', '.hebrew')]
+        return [('inexact', ''), ('natural', '.hebrew')]
     # elif field.get('es:title'):
     #     if field.get('es:keyword'):
     #         return [('exact', '^10')]
