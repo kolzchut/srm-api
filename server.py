@@ -44,6 +44,27 @@ class SRMQuery(Query):
     extract_agg = False
     extract_viewport = False
 
+    STOPWORDS = [
+        'עמותה', 
+        'גיל', 'הגיל', 'לגיל',
+        'קבוצה', 'קבוצת', 'הקבוצה', 'לקבוצה',
+        'עבור', 'טיפול', 'ניתן',
+        'אנשים',
+        'שירות', 'שירותים', 'השירות', 'לשירות', 'שרות', 'שרותים',
+        'בכל', 'לכל',
+        'תוכנית', 'תכנית',
+        'על', 'בעלי',
+    ]
+
+    def cleanup_query(self, q):
+        return ' '.join(filter(lambda x: x not in self.STOPWORDS, q.split(' ')))
+
+    def apply_term(self, term, *args, **kwargs):
+        super().apply_term(self.cleanup_query(term), *args, **kwargs)
+
+    def apply_highlighting(self, term, *args, **kwargs):
+        super().apply_highlighting(self.cleanup_query(term), *args, **kwargs)
+
     def apply_extra(self, extras):
         if extras:
             extras = extras.split('|')
