@@ -142,7 +142,9 @@ class SRMQuery(Query):
                                     'organization_name_parts',
                                     'address_parts',
                                     'branch_city',
-                                    'branch_address'
+                                    'branch_address',
+                                    'branch_geometry',
+                                    'point_id',
                                 ]
                             }
                         }
