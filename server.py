@@ -135,8 +135,7 @@ class SRMQuery(Query):
                             'inner_hits': {
                                 'name': 'collapse_hits',
                                 'size': 5,
-                                '_source': False,
-                                'fields': [
+                                '_source': [
                                     'card_id',
                                     'organization_name',
                                     'organization_short_name',
@@ -245,8 +244,7 @@ class SRMQuery(Query):
                 if _type == 'cards':
                     for h in resp.get('hits', {}).get('hits', []):
                         collapse_hits = h.get('inner_hits', {}).get('collapse_hits', {}).get('hits', {}).get('hits', [])
-                        collapse_hits = [x.get('fields', {}) for x in collapse_hits]
-                        collapse_hits = [dict((k, v[0]) for k, v in rec.items() if v) for rec in collapse_hits]
+                        collapse_hits = [x.get('_source', {}) for x in collapse_hits]
                         h['_source']['collapse_hits'] = collapse_hits
 
 app = Flask(__name__)
