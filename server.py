@@ -43,6 +43,7 @@ class SRMQuery(Query):
 
     extract_agg = False
     extract_viewport = False
+    collapse_hits = False
 
     STOPWORDS = [
         'עמותה',
@@ -130,8 +131,23 @@ class SRMQuery(Query):
                     if 'cards' in self.q:
                         field = 'collapse_key'
                         self.q['cards']['collapse'] = {
-                            'field': field
+                            'field': field,
+                            'inner_hits': {
+                                'name': 'collapse_hits',
+                                'size': 5,
+                                '_source': False,
+                                'fields': [
+                                    'card_id',
+                                    'organization_name',
+                                    'organization_short_name',
+                                    'organization_name_parts',
+                                    'address_parts',
+                                    'branch_city',
+                                    'branch_address'
+                                ]
+                            }
                         }
+                        self.collapse_hits = True
                 if x == 'collapse-collect':
                     if 'cards' in self.q:
                         field = 'collapse_key'
@@ -224,7 +240,14 @@ class SRMQuery(Query):
                             return_value['viewport'] = viewport['bounds']
                         else:
                             print('NO BOUNDS', viewport)
-
+        if self.collapse_hits:
+            for _type, resp in zip(self.types, response['responses']):
+                if _type == 'cards':
+                    for h in resp.get('hits', {}).get('hits', []):
+                        collapse_hits = h.get('inner_hits', {}).get('collapse_hits', {}).get('hits', {}).get('hits', [])
+                        collapse_hits = [x.get('fields', {}) for x in collapse_hits]
+                        collapse_hits = [dict((k, v[0]) for k, v in rec.items() if v) for rec in collapse_hits]
+                        h['_source']['collapse_hits'] = collapse_hits
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
