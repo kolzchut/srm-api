@@ -134,7 +134,7 @@ class SRMQuery(Query):
                             'field': field,
                             'inner_hits': {
                                 'name': 'collapse_hits',
-                                'size': 5,
+                                'size': 1000,
                                 '_source': [
                                     'card_id',
                                     'organization_name',
