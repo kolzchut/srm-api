@@ -146,6 +146,7 @@ class SRMQuery(Query):
                                     'branch_geometry',
                                     'point_id',
                                     'service_name',
+                                    'national_service',
                                 ]
                             }
                         }
