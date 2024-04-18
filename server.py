@@ -311,7 +311,7 @@ def simple_cards():
     if responses:
         filters['response_ids_parents']= responses
     if situations:
-        filters['situation_ids']= situations
+        filters['situation_ids']= situations.split(',')
     if bounds:
         bounds = bounds.split(',')
         bounds = [float(x) for x in bounds]
