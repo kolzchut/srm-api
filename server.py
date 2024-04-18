@@ -346,6 +346,8 @@ def simple_cards():
         'organization_phone_numbers',
         'organization_urls',
         'national_service',
+        'situations',
+        'responses',
     }
     results = []
     search_results = ret.get('search_results')
