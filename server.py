@@ -312,7 +312,14 @@ def simple_cards():
     if situations:
         filters['situation_ids']= situations
     if bounds:
-        filters['branch_geometry__bounded'] = json.loads(bounds)
+        bounds = bounds.split(',')
+        bounds = [float(x) for x in bounds]
+        filters['branch_geometry__bounded'] = [
+            [
+                [bounds[0], bounds[3]],
+                [bounds[2], bounds[1]],
+            ]
+        ]
     filters = json.dumps([filters])
 
     es_client = current_app.config['ES_CLIENT']        
