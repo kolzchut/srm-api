@@ -356,6 +356,7 @@ def simple_cards():
         rec = {k: v for k, v in ret.items() if k in KEYS and v is not None and v != []}
         results.append(rec)
     ret['search_results'] = results
+    return ret
 
 
 @app.after_request
