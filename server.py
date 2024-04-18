@@ -1,7 +1,7 @@
 import os
 import json
 
-from flask import Flask
+from flask import Flask, current_app, request
 from flask_cors import CORS
 
 import elasticsearch
@@ -297,6 +297,34 @@ blueprint = apies_blueprint(app,
     query_cls=SRMQuery,
 )
 app.register_blueprint(blueprint, url_prefix='/api/idx/')
+
+
+# Simple API, with four parameters: q, response, situation and bounds
+@app.route('/api/simple/cards')
+def simple_cards():
+    q = request.args.get('q', '')
+    responses = request.args.get('response', '')
+    situations = request.args.get('situation', '')
+    bounds = request.args.get('bounds', '')
+    filters = {}
+    if responses:
+        filters['response_ids_parents']= responses
+    if situations:
+        filters['situation_ids']= situations
+    if bounds:
+        filters['branch_geometry__bounded'] = json.loads(bounds)
+    filters = json.dumps([filters])
+
+    es_client = current_app.config['ES_CLIENT']        
+    return blueprint.controllers.search(
+        es_client, ['cards'], q,
+        size=30,
+        offset=0,
+        filters=filters,
+        score_threshold=0, 
+        match_type='cross_fields',
+        match_operator='or',
+    ).get('search_results', [])
 
 
 @app.after_request
