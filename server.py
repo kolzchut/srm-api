@@ -316,7 +316,7 @@ def simple_cards():
     filters = json.dumps([filters])
 
     es_client = current_app.config['ES_CLIENT']        
-    return blueprint.controllers.search(
+    ret = blueprint.controllers.search(
         es_client, ['cards'], q,
         size=30,
         offset=0,
@@ -326,6 +326,34 @@ def simple_cards():
         match_type='cross_fields',
         match_operator='or',
     )
+    KEYS = {
+        'service_name',
+        'service_description',
+        'service_details',
+        'service_payment_details',
+        'service_payment_required',
+        'service_phone_numbers',
+        'service_urls',
+        'service_email_address',
+        'branch_urls',
+        'branch_orig_address',
+        'branch_phone_numbers',
+        'branch_email_address',
+        'branch_description',
+        'organization_name',
+        'organization_kind',
+        'organization_email_address',
+        'organization_phone_numbers',
+        'organization_urls',
+        'national_service',
+    }
+    results = []
+    search_results = ret.get('search_results')
+    for rec in search_results:
+        rec = rec.get('source')
+        rec = {k: v for k, v in ret.items() if k in KEYS and v is not None and v != []}
+        results.append(rec)
+    ret['search_results'] = results
 
 
 @app.after_request
