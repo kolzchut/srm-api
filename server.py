@@ -316,7 +316,7 @@ def simple_cards():
     filters = json.dumps([filters])
 
     es_client = current_app.config['ES_CLIENT']        
-    return blueprint.controllers.search(
+    return dict(results=blueprint.controllers.search(
         es_client, ['cards'], q,
         size=30,
         offset=0,
@@ -324,7 +324,7 @@ def simple_cards():
         score_threshold=0, 
         match_type='cross_fields',
         match_operator='or',
-    ).get('search_results', [])
+    ).get('search_results', []))
 
 
 @app.after_request
