@@ -315,10 +315,8 @@ def simple_cards():
         bounds = bounds.split(',')
         bounds = [float(x) for x in bounds]
         filters['branch_geometry__bounded'] = [
-            [
-                [bounds[0], bounds[3]],
-                [bounds[2], bounds[1]],
-            ]
+            [bounds[0], bounds[3]],
+            [bounds[2], bounds[1]],
         ]
     filters = json.dumps([filters])
 
