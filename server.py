@@ -318,7 +318,7 @@ def simple_cards():
     es_client = current_app.config['ES_CLIENT']        
     ret = blueprint.controllers.search(
         es_client, ['cards'], q,
-        size=30,
+        size=10,
         offset=0,
         filters=filters,
         score_threshold=0, 
@@ -353,7 +353,13 @@ def simple_cards():
     for rec in search_results:
         rec = rec.get('source')
         rec = {k: v for k, v in rec.items() if k in KEYS and v is not None and v != []}
+        if rec.get('service_description'):
+            rec['service_description'] = rec['service_description'][:200]
         results.append(rec)
+        for r in rec.get('responses', []):
+            r.pop('synonyms', None)
+        for r in rec.get('situations', []):
+            r.pop('synonyms', None)
     ret['search_results'] = results
     return ret
 
