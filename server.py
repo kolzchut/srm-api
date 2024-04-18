@@ -358,7 +358,7 @@ def simple_cards():
     return ret
 
 @app.route('/api/simple/taxonomy')
-def simple_cards():
+def simple_taxonomy():
     q = request.args.get('q', '')
 
     es_client = current_app.config['ES_CLIENT']        
