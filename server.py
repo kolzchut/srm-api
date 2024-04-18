@@ -321,7 +321,6 @@ def simple_cards():
         size=30,
         offset=0,
         filters=filters,
-        extra='distinct-situations|distinct-responses',
         score_threshold=0, 
         match_type='cross_fields',
         match_operator='or',
@@ -357,6 +356,26 @@ def simple_cards():
         results.append(rec)
     ret['search_results'] = results
     return ret
+
+@app.route('/api/simple/taxonomy')
+def simple_cards():
+    q = request.args.get('q', '')
+
+    es_client = current_app.config['ES_CLIENT']        
+    ret = blueprint.controllers.search(
+        es_client, ['cards'], q,
+        size=1,
+        offset=0,
+        extra='distinct-situations|distinct-responses',
+        score_threshold=0, 
+        match_type='cross_fields',
+        match_operator='or',
+    )
+    return dict(
+        situations=ret.get('situations', [])[:30],
+        responses=ret.get('responses', [])[:30],
+    )
+
 
 
 @app.after_request
