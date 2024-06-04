@@ -140,6 +140,7 @@ class SRMQuery(Query):
                                     'organization_name',
                                     'organization_short_name',
                                     'organization_name_parts',
+                                    'branch_operating_unit',
                                     'address_parts',
                                     'branch_city',
                                     'branch_address',
