@@ -79,7 +79,7 @@ class SRMQuery(Query):
                             }
                         }
                         self.extract_agg = True
-                if x in 'distinct-responses':
+                if x == 'distinct-responses':
                     if 'cards' in self.q:
                         min_score = self.q['cards'].get('min_score', 0)
                         if min_score > 0:
@@ -110,7 +110,7 @@ class SRMQuery(Query):
                             }
                         }
                         self.extract_agg = True
-                if x in 'distinct-responses-only':
+                if x == 'distinct-responses-only':
                     if 'cards' in self.q:
                         min_score = self.q['cards'].get('min_score', 0)
                         if min_score > 0:
