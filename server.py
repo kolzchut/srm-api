@@ -110,6 +110,37 @@ class SRMQuery(Query):
                             }
                         }
                         self.extract_agg = True
+                if x in 'distinct-responses-only':
+                    if 'cards' in self.q:
+                        min_score = self.q['cards'].get('min_score', 0)
+                        if min_score > 0:
+                            self.q['cards'].setdefault('aggs', {})['responses'] = {
+                                'terms': {
+                                    'field': f'responses.id',
+                                    'size': 1000
+                                },
+                                'aggs': {
+                                    'max_score': {
+                                        'max': {
+                                            'script': '_score'
+                                        }
+                                    }
+                                },
+                            }
+                        else:
+                            self.q['cards'].setdefault('aggs', {})['responses'] = {
+                                'terms': {
+                                    'field': f'responses.id',
+                                    'size': 1000
+                                }
+                            }
+                        self.q['cards'].setdefault('aggs', {})['categories'] = {
+                            'terms': {
+                                'field': 'response_categories',
+                                'size': 20
+                            }
+                        }
+                        self.extract_agg = True
                 if x == 'did-you-mean':
                     if 'cards' in self.q:
                         self.q['cards'].setdefault('aggs', {})['inner_pac'] = {
