@@ -134,12 +134,6 @@ class SRMQuery(Query):
                                     'size': 1000
                                 }
                             }
-                        self.q['cards'].setdefault('aggs', {})['categories'] = {
-                            'terms': {
-                                'field': 'response_categories',
-                                'size': 20
-                            }
-                        }
                         self.extract_agg = True
                 if x == 'did-you-mean':
                     if 'cards' in self.q:
