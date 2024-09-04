@@ -70,11 +70,20 @@ class SRMQuery(Query):
         if extras:
             extras = extras.split('|')
             for x in extras:
-                if x == 'distinct-situations':
+                if x == 'distinct-situations-exact':
                     if 'cards' in self.q:
-                        self.q['cards'].setdefault('aggs', {})['situations'] = {
+                        self.q['cards'].setdefault('aggs', {})['situations_exact'] = {
                             'terms': {
                                 'field': f'situations.id',
+                                'size': 1000
+                            }
+                        }
+                        self.extract_agg = True
+                if x == 'distinct-responses-exact':
+                    if 'cards' in self.q:
+                        self.q['cards'].setdefault('aggs', {})['responses_exact'] = {
+                            'terms': {
+                                'field': f'responses.id',
                                 'size': 1000
                             }
                         }
@@ -110,13 +119,13 @@ class SRMQuery(Query):
                             }
                         }
                         self.extract_agg = True
-                if x == 'distinct-responses-only':
+                if x == 'distinct-situations':
                     if 'cards' in self.q:
                         min_score = self.q['cards'].get('min_score', 0)
                         if min_score > 0:
-                            self.q['cards'].setdefault('aggs', {})['responses'] = {
+                            self.q['cards'].setdefault('aggs', {})['situations'] = {
                                 'terms': {
-                                    'field': f'responses.id',
+                                    'field': f'situations.id',
                                     'size': 1000
                                 },
                                 'aggs': {
@@ -128,9 +137,9 @@ class SRMQuery(Query):
                                 },
                             }
                         else:
-                            self.q['cards'].setdefault('aggs', {})['responses'] = {
+                            self.q['cards'].setdefault('aggs', {})['situations'] = {
                                 'terms': {
-                                    'field': f'responses.id',
+                                    'field': f'situations.id',
                                     'size': 1000
                                 }
                             }
