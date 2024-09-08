@@ -23,7 +23,7 @@ jobs:
           BUILD_ARGS="--cache-from ghcr.io/kolzchut/${IMAGE_NAME}:latest"
         fi
         docker build -t api $BUILD_ARGS . &&\
-        echo "${GITHUB_TOKEN}" | docker login https://ghcr.io -u whiletrue-industries --password-stdin &&\
+        echo "${GITHUB_TOKEN}" | docker login https://ghcr.io -u kolzchut --password-stdin &&\
         docker tag api "ghcr.io/kolzchut/${IMAGE_NAME}:${GITHUB_SHA}" &&\
         docker push "ghcr.io/kolzchut/${IMAGE_NAME}:${GITHUB_SHA}" &&\
         if [ "${GITHUB_REF}" == "refs/heads/main" ] || [ "${TAG_NAME}" != "" ]; then
