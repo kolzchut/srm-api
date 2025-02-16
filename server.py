@@ -318,7 +318,7 @@ blueprint = apies_blueprint(app,
         for t in types
     ),
     f'{index_name}__cards',
-    debug_queries=False,
+    debug_queries=True,
     text_field_rules=text_field_rules,
     # text_field_select=dict(
     #     cards=['service_name', 'organization_name', 'responses.name', 'branch_address', 
