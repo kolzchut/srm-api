@@ -12,9 +12,6 @@ from apisql import apisql_blueprint
 from apies import apies_blueprint
 from apies.logger import logger
 from apies.query import Query
-from dotenv import load_dotenv
-
-load_dotenv()
 
 def text_field_rules(field):
     name_suffix = field['name'].split('_')[-1]
