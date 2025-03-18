@@ -176,8 +176,11 @@ class SRMQuery(Query):
                         }
                         self.collapse_hits = True
                 if x == 'collapse-collect':
-                    if 'cards' in self.q:
-                        self.q['cards'].setdefault('aggs', {})['collapse_key'] = {
+                    if 'cards' in self.q and isinstance(self.q['cards'], dict):
+                        if 'aggs' not in self.q['cards']:  
+                            self.q['cards']['aggs'] = {}
+
+                        self.q['cards']['aggs']['collapse_key'] = {
                             'terms': {
                                 'script': {
                                     'source': "doc['service_name'].value + '|' + doc['service_description'].value"
