@@ -12,31 +12,23 @@ from apisql import apisql_blueprint
 from apies import apies_blueprint
 from apies.logger import logger
 from apies.query import Query
+from dotenv import load_dotenv
 
+load_dotenv()
 
 def text_field_rules(field):
-    if field['name'].split('_')[-1] in ('id', 'ids', 'categories', 'category', 'key'):
+    name_suffix = field['name'].split('_')[-1]
+    if name_suffix in ('id', 'ids', 'categories', 'category', 'key'):
         return []
-    elif field.get('es:autocomplete'):
+    if field.get('es:autocomplete'):
         return [('inexact', '^10'), ('inexact', '._2gram^10'), ('inexact', '._3gram^10')]
-    elif field['name'].split('_')[-1] in ('name', 'synonyms', 'heb'):
+    if name_suffix in ('name', 'synonyms', 'heb'):
         return [('inexact', '^10'), ('natural', '.hebrew^10')]
-    elif field.get('es:hebrew') or field['name'].split('_')[-1] in ('purpose', 'description', 'details', 'query'):
+    if field.get('es:hebrew') or name_suffix in ('purpose', 'description', 'details', 'query'):
         return [('inexact', ''), ('natural', '.hebrew')]
-    # elif field.get('es:title'):
-    #     if field.get('es:keyword'):
-    #         return [('exact', '^10')]
-    #     else:
-    #         return [('inexact', '^3')]
-    # elif field.get('es:boost'):
-    #     if field.get('es:keyword'):
-    #         return [('exact', '^10')]
-    #     else:
-    #         return [('inexact', '^10')]
-    elif field.get('es:keyword'):
+    if field.get('es:keyword'):
         return [('exact', '')]
-    else:
-        return [('inexact', '')]
+    return [('inexact', '')]
 
 
 class SRMQuery(Query):
@@ -163,9 +155,11 @@ class SRMQuery(Query):
                         self.extract_agg = True
                 if x == 'collapse':
                     if 'cards' in self.q:
-                        field = 'collapse_key'
                         self.q['cards']['collapse'] = {
-                            'field': field,
+                            'field': '_script',
+                            'script': {
+                                'source': "doc['service_name'].value + '|' + doc['service_description'].value"
+                            },
                             'inner_hits': {
                                 'name': 'collapse_hits',
                                 'size': 1000,
@@ -181,6 +175,7 @@ class SRMQuery(Query):
                                     'branch_geometry',
                                     'point_id',
                                     'service_name',
+                                    'service_description',
                                     'national_service',
                                 ]
                             }
@@ -188,10 +183,11 @@ class SRMQuery(Query):
                         self.collapse_hits = True
                 if x == 'collapse-collect':
                     if 'cards' in self.q:
-                        field = 'collapse_key'
-                        self.q['cards'].setdefault('aggs', {})[field] = {
+                        self.q['cards'].setdefault('aggs', {})['collapse_key'] = {
                             'terms': {
-                                'field': field,
+                                'script': {
+                                    'source': "doc['service_name'].value + '|' + doc['service_description'].value"
+                                },
                                 'size': 20000,
                                 'min_doc_count': 2
                             }
@@ -333,98 +329,6 @@ blueprint = apies_blueprint(app,
     query_cls=SRMQuery,
 )
 app.register_blueprint(blueprint, url_prefix='/api/idx/')
-
-
-# Simple API, with four parameters: q, response, situation and bounds
-@app.route('/api/simple/cards')
-def simple_cards():
-    q = request.args.get('q', '')
-    responses = request.args.get('response', '')
-    situations = request.args.get('situation', '')
-    bounds = request.args.get('bounds', '')
-    filters = {}
-    if responses:
-        filters['response_ids_parents']= responses
-    if situations:
-        for i, s in enumerate(situations.split(',')):
-            filters[f'situation_ids#{i}'] = s
-    if bounds:
-        bounds = bounds.split(',')
-        bounds = [float(x) for x in bounds]
-        filters['branch_geometry__bounded'] = [
-            [bounds[0], bounds[3]],
-            [bounds[2], bounds[1]],
-        ]
-    filters = json.dumps([filters])
-
-    es_client = current_app.config['ES_CLIENT']        
-    ret = blueprint.controllers.search(
-        es_client, ['cards'], q,
-        size=10,
-        offset=0,
-        filters=filters,
-        score_threshold=0, 
-        match_type='cross_fields',
-        match_operator='or',
-    )
-    KEYS = {
-        'service_name',
-        'service_description',
-        'service_details',
-        'service_payment_details',
-        'service_payment_required',
-        'service_phone_numbers',
-        'service_urls',
-        'service_email_address',
-        'branch_urls',
-        'branch_orig_address',
-        'branch_phone_numbers',
-        'branch_email_address',
-        'branch_description',
-        'organization_name',
-        'organization_kind',
-        'organization_email_address',
-        'organization_phone_numbers',
-        'organization_urls',
-        'national_service',
-        'situations',
-        'responses',
-    }
-    results = []
-    search_results = ret.get('search_results')
-    for rec in search_results:
-        rec = rec.get('source')
-        rec = {k: v for k, v in rec.items() if k in KEYS and v is not None and v != []}
-        if rec.get('service_description'):
-            rec['service_description'] = rec['service_description'][:200]
-        results.append(rec)
-        for r in rec.get('responses', []):
-            r.pop('synonyms', None)
-        for r in rec.get('situations', []):
-            r.pop('synonyms', None)
-    ret['search_results'] = results
-    return ret
-
-@app.route('/api/simple/taxonomy')
-def simple_taxonomy():
-    q = request.args.get('q', '')
-
-    es_client = current_app.config['ES_CLIENT']        
-    ret = blueprint.controllers.search(
-        es_client, ['cards'], q,
-        size=1,
-        offset=0,
-        extra='distinct-situations|distinct-responses',
-        score_threshold=0, 
-        match_type='cross_fields',
-        match_operator='or',
-    )
-    return dict(
-        situations=ret.get('situations', [])[:30],
-        responses=ret.get('responses', [])[:30],
-    )
-
-
 
 @app.after_request
 def add_header(response):
