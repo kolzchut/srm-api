@@ -153,10 +153,7 @@ class SRMQuery(Query):
                 if x == 'collapse':
                     if 'cards' in self.q:
                         self.q['cards']['collapse'] = {
-                            'field': '_script',
-                            'script': {
-                                'source': "doc['service_name'].value + '|' + doc['service_description'].value"
-                            },
+                            'field': 'collapse_key',
                             'inner_hits': {
                                 'name': 'collapse_hits',
                                 'size': 1000,
