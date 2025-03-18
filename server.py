@@ -180,10 +180,7 @@ class SRMQuery(Query):
                         field = 'collapse_key'
                         self.q['cards'].setdefault('aggs', {})[field] = {
                             'terms': {
-                                'script': {
-                                    'source': "doc['service_name'].value + '|' + doc['service_description'].value",
-                                    'lang': 'painless'
-                                },
+                                'field': field,
                                 'size': 20000,
                                 'min_doc_count': 2
                             }
