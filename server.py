@@ -56,6 +56,7 @@ class SRMQuery(Query):
         return super().apply_highlighting(self.cleanup_query(term), *args, **kwargs)
 
     def apply_extra(self, extras):
+        print('-- apply_extra --', self, extras)
         if extras:
             extras = extras.split('|')
             for x in extras:
@@ -151,6 +152,7 @@ class SRMQuery(Query):
                         }
                         self.extract_agg = True
                 if x == 'collapse':
+                    print('COLLAPSE', self.q)
                     if 'cards' in self.q:
                         self.q['cards']['collapse'] = {
                             'field': 'collapse_key',
@@ -176,6 +178,7 @@ class SRMQuery(Query):
                         }
                         self.collapse_hits = True
                 if x == 'collapse-collect':
+                    print('COLLAPSE-COLLECT', self.q)
                     if 'cards' in self.q:
                         field = 'collapse_key'
                         self.q['cards'].setdefault('aggs', {})[field] = {
@@ -248,7 +251,9 @@ class SRMQuery(Query):
         return self
 
     def process_extra(self, return_value, response):
+        print('-- process_extra --', self, return_value, response)
         if self.extract_agg:
+            print('EXTRACT_AGG')
             for _type, resp in zip(self.types, response['responses']):
                 if _type == 'cards':
                     for k, v in resp['aggregations'].items():
@@ -259,6 +264,7 @@ class SRMQuery(Query):
                         elif 'buckets' in v:
                             return_value[k] = v['buckets']
         if self.extract_viewport:
+            print('EXTRACT_VIEWPORT')
             for _type, resp in zip(self.types, response['responses']):
                 if _type == 'cards':
                     if 'viewport' in resp['aggregations']:
@@ -268,12 +274,14 @@ class SRMQuery(Query):
                         else:
                             print('NO BOUNDS', viewport)
         if self.collapse_hits:
+            print('COLLAPSE_HITS')
             for _type, resp in zip(self.types, response['responses']):
                 if _type == 'cards':
                     for h in resp.get('hits', {}).get('hits', []):
                         collapse_hits = h.get('inner_hits', {}).get('collapse_hits', {}).get('hits', {}).get('hits', [])
                         collapse_hits = [x.get('_source', {}) for x in collapse_hits]
                         h['_source']['collapse_hits'] = collapse_hits
+        print('-- process_extra finished --', self, return_value, response)
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
