@@ -152,13 +152,17 @@ class SRMQuery(Query):
                         }
                         self.extract_agg = True
                 if x == 'collapse':
-                    print('COLLAPSE', self.q)
                     if 'cards' in self.q:
                         self.q['cards']['collapse'] = {
                             'field': 'collapse_key',
                             'inner_hits': {
                                 'name': 'collapse_hits',
                                 'size': 1000,
+                                'sort': [
+                                    {'national_service': {'order': 'desc'}},
+                                    {'address_parts.primary.keyword': {'order': 'asc'}},
+                                    {'address_parts.secondary.keyword': {'order': 'asc'}},
+                                ],
                                 '_source': [
                                     'card_id',
                                     'organization_name',
@@ -178,7 +182,6 @@ class SRMQuery(Query):
                         }
                         self.collapse_hits = True
                 if x == 'collapse-collect':
-                    print('COLLAPSE-COLLECT', self.q)
                     if 'cards' in self.q:
                         field = 'collapse_key'
                         self.q['cards'].setdefault('aggs', {})[field] = {
