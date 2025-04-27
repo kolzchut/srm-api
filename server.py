@@ -160,6 +160,7 @@ class SRMQuery(Query):
                                 'size': 1000,
                                 'sort': [
                                     {'national_service': {'order': 'desc'}},
+                                    {'address_parts.primary': {'order': 'asc', 'missing': '_last'}},
                                 ],
                                 '_source': [
                                     'card_id',
