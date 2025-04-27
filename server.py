@@ -158,10 +158,6 @@ class SRMQuery(Query):
                             'inner_hits': {
                                 'name': 'collapse_hits',
                                 'size': 1000,
-                                'sort': [
-                                    {'national_service': {'order': 'desc'}},
-                                    {'address_parts.primary': {'order': 'asc'}}
-                                ],
                                 '_source': [
                                     'card_id',
                                     'organization_name',
@@ -258,7 +254,7 @@ class SRMQuery(Query):
             print('EXTRACT_AGG')
             for _type, resp in zip(self.types, response['responses']):
                 if _type == 'cards':
-                    for k, v in resp.get('aggregations', {}).items():
+                    for k, v in resp['aggregations'].items():
                         if k.startswith('inner_'):
                             for k_, v_ in v.items():
                                 if k_ != 'doc_count':
