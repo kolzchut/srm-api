@@ -158,6 +158,11 @@ class SRMQuery(Query):
                             'inner_hits': {
                                 'name': 'collapse_hits',
                                 'size': 1000,
+                                'sort': [
+                                    {'national_service': {'order': 'desc'}},
+                                    {'address_parts.primary.keyword': {'order': 'asc'}},
+                                    {'address_parts.secondary.keyword': {'order': 'asc'}},
+                                ],
                                 '_source': [
                                     'card_id',
                                     'organization_name',
