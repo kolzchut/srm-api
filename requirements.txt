@@ -3,7 +3,6 @@ SQLAlchemy==2.0.0
 Flask==2.1.3
 Flask-Cors==5.0.0
 psycopg2-binary==2.9.10
-apies==1.11.0
 apisql==0.7.1
 itsdangerous==2.0.1
 Jinja2==3.0.3

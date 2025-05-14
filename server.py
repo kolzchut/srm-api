@@ -8,9 +8,7 @@ import elasticsearch
 from datapackage import Package
 
 from apisql import apisql_blueprint
-
 from apies import apies_blueprint
-from apies.logger import logger
 from apies.query import Query
 
 def text_field_rules(field):
@@ -159,7 +157,7 @@ class SRMQuery(Query):
                                 'name': 'collapse_hits',
                                 'size': 1000,
                                 'sort': [
-                                    {'national_service': {'order': 'desc'}},
+                                    {'national_service': {'order': 'asc'}},
                                     # {'address_parts.primary.keyword': {'order': 'asc', 'missing': '_last'}},
                                 ],
                                 '_source': [
