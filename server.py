@@ -157,7 +157,7 @@ class SRMQuery(Query):
                                 'name': 'collapse_hits',
                                 'size': 1000,
                                 'sort': [
-                                    {'national_service': {'order': 'asc'}},
+                                    {'national_service': {'order': 'desc'}},
                                     # {'address_parts.primary.keyword': {'order': 'asc', 'missing': '_last'}},
                                 ],
                                 '_source': [
