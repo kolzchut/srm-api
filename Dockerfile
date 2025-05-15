@@ -7,8 +7,8 @@ WORKDIR /app
 
 ADD requirements.txt .
 RUN pip install -r requirements.txt
-COPY ./apies .
-COPY ./apisql .
+COPY ./apies /app/apies
+COPY ./apisql /app/apisql
 ADD server.py .
 ADD prepare.py .
 ADD entrypoint.sh .
