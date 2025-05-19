@@ -156,10 +156,10 @@ class SRMQuery(Query):
                             'inner_hits': {
                                 'name': 'collapse_hits',
                                 'size': 1000,
-                                # 'sort': [ ## Ariel Test disabling this
-                                #     # {'national_service': {'order': 'desc'}},
-                                #     # {'address_parts.primary.keyword': {'order': 'asc', 'missing': '_last'}},
-                                # ],
+                                'sort': [
+                                    {'national_service': {'order': 'desc'}},
+                                    # {'address_parts.primary.keyword': {'order': 'asc', 'missing': '_last'}},
+                                ],
                                 '_source': [
                                     'card_id',
                                     'organization_name',
@@ -284,6 +284,7 @@ class SRMQuery(Query):
                         h['_source']['collapse_hits'] = collapse_hits
         print('-- process_extra finished --', self, return_value, response)
 
+
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 app.config['JSON_AS_ASCII'] = False
@@ -306,31 +307,33 @@ types = [p.resources[0].name for p in datapackages]
 print('TYPES:', types)
 
 blueprint = apies_blueprint(app,
-    datapackages,
-    elasticsearch.Elasticsearch(
-        [dict(host=os.environ['ES_HOST'], port=int(os.environ['ES_PORT']))], timeout=60,
-        **({"http_auth": os.environ['ES_HTTP_AUTH'].split(':')} if os.environ.get('ES_HTTP_AUTH') else {})
-    ),
-    dict(
-        (t, f'{index_name}__{t}')
-        for t in types
-    ),
-    f'{index_name}__cards',
-    debug_queries=True,
-    text_field_rules=text_field_rules,
-    # text_field_select=dict(
-    #     cards=['service_name', 'organization_name', 'responses.name', 'branch_address', 
-    #            'branch_name', 'situations.name', 'responses.synonyms', 
-    #            'situations.synonyms', 'service_details', 'service_description'],
-    #     places=['name'],
-    #     responses=['name', 'synonyms'],
-    #     points=[]
-    # ),
-    multi_match_type='bool_prefix',
-    multi_match_operator='and',
-    query_cls=SRMQuery,
-)
+                            datapackages,
+                            elasticsearch.Elasticsearch(
+                                [dict(host=os.environ['ES_HOST'], port=int(os.environ['ES_PORT']))], timeout=60,
+                                **({"http_auth": os.environ['ES_HTTP_AUTH'].split(':')} if os.environ.get(
+                                    'ES_HTTP_AUTH') else {})
+                            ),
+                            dict(
+                                (t, f'{index_name}__{t}')
+                                for t in types
+                            ),
+                            f'{index_name}__cards',
+                            debug_queries=True,
+                            text_field_rules=text_field_rules,
+                            # text_field_select=dict(
+                            #     cards=['service_name', 'organization_name', 'responses.name', 'branch_address',
+                            #            'branch_name', 'situations.name', 'responses.synonyms',
+                            #            'situations.synonyms', 'service_details', 'service_description'],
+                            #     places=['name'],
+                            #     responses=['name', 'synonyms'],
+                            #     points=[]
+                            # ),
+                            multi_match_type='bool_prefix',
+                            multi_match_operator='and',
+                            query_cls=SRMQuery,
+                            )
 app.register_blueprint(blueprint, url_prefix='/api/idx/')
+
 
 @app.after_request
 def add_header(response):
@@ -338,7 +341,7 @@ def add_header(response):
     return response
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     app.run()
 else:
     import logging
