@@ -293,7 +293,7 @@ app.config['JSON_AS_ASCII'] = False
 app.register_blueprint(
     apisql_blueprint(
         connection_string=os.environ['DATABASE_READONLY_URL'],
-        max_rows=20000, debug=False
+        max_rows=20000, debug=True,
     ),
     url_prefix='/api/db/'
 )
