@@ -232,7 +232,7 @@ class SRMQuery(Query):
                                         'field': 'coords',
                                         'size': 1
                                     }
-                                },
+                                }
                             }
                         }
                         self.extract_agg = True
