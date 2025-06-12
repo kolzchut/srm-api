@@ -232,14 +232,19 @@ class SRMQuery(Query):
                                         'field': 'coords',
                                         'size': 1
                                     }
+                                },
+                                # Test
+                                'exclude_national_service': {
+                                    'bucket_selector': {
+                                        'buckets_path': {
+                                            'point_id': '_key'
+                                        },
+                                        'script': 'params.point_id != "national_service"'
+                                    }
                                 }
+                                # Test
                             }
                         }
-                        # Test
-                        self.q['cards'].setdefault('query', {}).setdefault('bool', {}).setdefault('must_not', []).append({
-                            'term': {'point_id': 'national_service'}
-                        })
-                        # Test
                         self.extract_agg = True
                 if x == 'national-services':
                     if 'cards' in self.q:
