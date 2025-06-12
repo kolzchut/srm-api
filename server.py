@@ -235,6 +235,11 @@ class SRMQuery(Query):
                                 }
                             }
                         }
+                        # Test
+                        self.q['cards'].setdefault('query', {}).setdefault('bool', {}).setdefault('must_not', []).append({
+                            'term': {'point_id': 'national_service'}
+                        })
+                        # Test
                         self.extract_agg = True
                 if x == 'national-services':
                     if 'cards' in self.q:
