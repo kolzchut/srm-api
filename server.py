@@ -233,16 +233,6 @@ class SRMQuery(Query):
                                         'size': 1
                                     }
                                 },
-                                # Test
-                                'exclude_national_service': {
-                                    'bucket_selector': {
-                                        'buckets_path': {
-                                            'point_id': '_key'
-                                        },
-                                        'script': 'params.point_id != "national_service"'
-                                    }
-                                }
-                                # Test
                             }
                         }
                         self.extract_agg = True
