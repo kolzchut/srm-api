@@ -176,6 +176,7 @@ class SRMQuery(Query):
                                     'service_name',
                                     'service_description',
                                     'national_service',
+                                    'score'
                                 ]
                             }
                         }
