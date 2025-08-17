@@ -1,4 +1,4 @@
-FROM python:3.8-slim-buster
+FROM python:3.8-slim-bookworm
 
 RUN apt-get update && adduser --disabled-password --home /app api && update-ca-certificates && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
